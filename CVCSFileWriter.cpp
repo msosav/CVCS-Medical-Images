@@ -5,6 +5,7 @@
 #include <vector>
 #include <iomanip>
 #include <typeinfo>
+#include <opencv2/opencv.hpp>
 
 #include "./Visor/VisorMatriz.h"
 
@@ -15,11 +16,11 @@ class CVCSFileWriter
 public:
     struct CVCSData
     {
-        std::string idPaciente;
-        std::string nombrePaciente;
-        std::string edadPaciente;
-        std::string fechaExamen;
-        std::string diagnosticos;
+        string idPaciente;
+        string nombrePaciente;
+        string edadPaciente;
+        string fechaExamen;
+        string diagnosticos;
     };
 
 #pragma pack(push, 1)
@@ -68,19 +69,19 @@ public:
 
     static void UpdateCVCSData(CVCSData &data)
     {
-        std::cout << "ID del paciente: ";
-        std::getline(std::cin, data.idPaciente);
-        std::cout << "Nombre del paciente: ";
-        std::getline(std::cin, data.nombrePaciente);
-        std::cout << "Edad del paciente: ";
-        std::getline(std::cin, data.edadPaciente);
-        std::cout << "Fecha del examen: ";
-        std::getline(std::cin, data.fechaExamen);
-        std::cout << "Diagnósticos: ";
-        std::getline(std::cin, data.diagnosticos);
+        cout << "ID del paciente: ";
+        getline(cin, data.idPaciente);
+        cout << "Nombre del paciente: ";
+        getline(cin, data.nombrePaciente);
+        cout << "Edad del paciente: ";
+        getline(cin, data.edadPaciente);
+        cout << "Fecha del examen: ";
+        getline(cin, data.fechaExamen);
+        cout << "Diagnósticos: ";
+        getline(cin, data.diagnosticos);
     }
 
-    static void ReplaceSpacesWithHyphens(std::string &str)
+    static void ReplaceSpacesWithHyphens(string &str)
     {
         for (size_t i = 0; i < str.size(); ++i)
         {
@@ -91,18 +92,17 @@ public:
         }
     }
 
-    static void WriteCVCSFile(const std::string &filename, const string &inputFile)
+    static void WriteCVCSFile(const string &filename, const string &inputFile)
     {
         vector<vector<VisorMatrizImg::Pixel>> matriz;
         BMPHeader header;
         matriz = leerArchivoBMP(inputFile.c_str(), header);
 
-        std::ofstream file(filename, std::ios::binary);
+        ofstream file(filename, ios::binary);
 
         if (!file.is_open())
         {
-            std::cerr << "Error opening file!" << std::endl;
-            return;
+            cerr << "Error opening file!" << endl;
         }
 
         CVCSData data;
@@ -122,19 +122,15 @@ public:
              << data.fechaExamen << " "
              << data.diagnosticos << "\n";
 
-        cout << reinterpret_cast<const char *>(&header.height) << endl;
-        cout << header.height << endl;
         file.write(reinterpret_cast<const char *>(&header.width), sizeof(int));
         file.write("x", 1);
         file.write(reinterpret_cast<const char *>(&header.height), sizeof(int));
 
-        for (int i = 0; i < header.height; i++)
+        for (int i = 0; i < matriz.size(); i++)
         {
-            for (int j = 0; j < header.width; j++)
+            for (int j = 0; j < matriz[0].size(); j++)
             {
-                file.write(reinterpret_cast<const char *>(&matriz[i][j].red), sizeof(unsigned char));
-                file.write(reinterpret_cast<const char *>(&matriz[i][j].green), sizeof(unsigned char));
-                file.write(reinterpret_cast<const char *>(&matriz[i][j].blue), sizeof(unsigned char));
+                file.write(reinterpret_cast<char *>(&matriz[i][j]), sizeof(VisorMatrizImg::Pixel));
             }
             file << "\n";
         }

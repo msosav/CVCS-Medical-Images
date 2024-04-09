@@ -13,6 +13,12 @@ public:
     struct Pixel
     {
         unsigned char red, green, blue;
+
+        // Define inequality operator for Pixel struct
+        bool operator!=(const Pixel &other) const
+        {
+            return (red != other.red || green != other.green || blue != other.blue);
+        }
     };
     // Constructor que inicializa la matriz con la matriz dada como parámetro
     VisorMatrizImg(const std::vector<std::vector<Pixel>> &inputMatrix);

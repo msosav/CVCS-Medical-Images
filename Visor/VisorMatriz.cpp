@@ -7,19 +7,25 @@
 // Constructor que inicializa la matriz con la matriz dada como parámetro
 VisorMatrizImg::VisorMatrizImg(const std::vector<std::vector<Pixel>> &inputMatrix)
 {
-    int rows = inputMatrix.size();
-    int cols = inputMatrix[0].size();
+    int height = inputMatrix.size();
+    int width = inputMatrix[0].size();
+    // int colors = inputMatrix[0].size();
 
-    // Crea una matriz cv::Mat de tamaño rows x cols y 3 canales para color
-    matrizImage = cv::Mat(rows, cols, CV_8UC3);
+    std::cout << "height: " << height << " width: " << width << std::endl;
+
+    // Crea una matriz cv::Mat de tamaño height x width y 3 canales para color
+    matrizImage = cv::Mat(height, width, CV_8UC3);
 
     // Rellena la matriz cv::Mat con los valores de la matriz de entrada
-    for (int i = 0; i < rows; ++i)
+    for (int i = 0; i < height; ++i)
     {
-        for (int j = 0; j < cols; ++j)
+        for (int j = 0; j < width; ++j)
         {
             // Convierte el valor de int a cv::Vec3b (BGR)
-            matrizImage.at<cv::Vec3b>(i, j) = cv::Vec3b(inputMatrix[i][j].red, inputMatrix[i][j].green, inputMatrix[i][j].blue);
+            matrizImage.at<cv::Vec3b>(i, j) = cv::Vec3b(
+                (int)inputMatrix[(height - 1) - i][j].red,
+                (int)inputMatrix[(height - 1) - i][j].green,
+                (int)inputMatrix[(height - 1) - i][j].blue);
         }
     }
 }

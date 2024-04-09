@@ -1,5 +1,3 @@
-#pragma once
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -8,79 +6,81 @@
 
 #include "./Visor/VisorMatriz.h"
 
+using namespace std;
+
 class CVCSFileReader
 {
 public:
     struct CVCSData
     {
-        std::string idPaciente;
-        std::string nombrePaciente;
-        std::string edadPaciente;
-        std::string fechaExamen;
-        std::string diagnosticos;
+        string idPaciente;
+        string nombrePaciente;
+        string edadPaciente;
+        string fechaExamen;
+        string diagnosticos;
     };
 
     static void UpdateCVCSData(CVCSData &data)
     {
-        std::cout << "ID del paciente: ";
-        std::getline(std::cin, data.idPaciente);
-        std::cout << "Nombre del paciente: ";
-        std::getline(std::cin, data.nombrePaciente);
-        std::cout << "Edad del paciente: ";
-        std::getline(std::cin, data.edadPaciente);
-        std::cout << "Fecha del examen: ";
-        std::getline(std::cin, data.fechaExamen);
-        std::cout << "Diagnósticos: ";
-        std::getline(std::cin, data.diagnosticos);
+        cout << "ID del paciente: ";
+        getline(cin, data.idPaciente);
+        cout << "Nombre del paciente: ";
+        getline(cin, data.nombrePaciente);
+        cout << "Edad del paciente: ";
+        getline(cin, data.edadPaciente);
+        cout << "Fecha del examen: ";
+        getline(cin, data.fechaExamen);
+        cout << "Diagnósticos: ";
+        getline(cin, data.diagnosticos);
     }
 
-    static void ReadCVCSFile(const std::string &filename)
+    static void ReadCVCSFile(const string &filename)
     {
-        std::ifstream file(filename, std::ios::binary);
+        ifstream file(filename, ios::binary);
 
         if (!file.is_open())
         {
-            std::cerr << "Error opening file!" << std::endl;
-            return;
+            cerr << "Error opening file!" << endl;
         }
 
         CVCSData data;
 
         // Read patient data
-        std::getline(file, data.idPaciente, ' ');
-        std::getline(file, data.nombrePaciente, ' ');
-        std::getline(file, data.edadPaciente, ' ');
-        std::getline(file, data.fechaExamen, ' ');
-        std::getline(file, data.diagnosticos);
+        getline(file, data.idPaciente, ' ');
+        getline(file, data.nombrePaciente, ' ');
+        getline(file, data.edadPaciente, ' ');
+        getline(file, data.fechaExamen, ' ');
+        getline(file, data.diagnosticos);
 
-        std::cout << "ID del paciente: " << data.idPaciente << std::endl;
-        std::cout << "Nombre del paciente: " << data.nombrePaciente << std::endl;
-        std::cout << "Edad del paciente: " << data.edadPaciente << std::endl;
-        std::cout << "Fecha del examen: " << data.fechaExamen << std::endl;
-        std::cout << "Diagnósticos: " << data.diagnosticos << std::endl;
+        cout << "ID del paciente: " << data.idPaciente << endl;
+        cout << "Nombre del paciente: " << data.nombrePaciente << endl;
+        cout << "Edad del paciente: " << data.edadPaciente << endl;
+        cout << "Fecha del examen: " << data.fechaExamen << endl;
+        cout << "Diagnósticos: " << data.diagnosticos << endl;
+        cout << endl;
 
         int width, height;
         file.read(reinterpret_cast<char *>(&width), sizeof(int));
-        file.seekg(1, std::ios::cur); // Skip separator
+        file.seekg(1, ios::cur); // Skip separator
         file.read(reinterpret_cast<char *>(&height), sizeof(int));
 
-        std::cout << "Matrix Width: " << width << std::endl;
-        std::cout << "Matrix Height: " << height << std::endl;
+        cout << "Matrix Width: " << width << endl;
+        cout << "Matrix Height: " << height << endl;
 
-        std::vector<std::vector<VisorMatrizImg::Pixel>> matriz(height, std::vector<VisorMatrizImg::Pixel>(width));
+        vector<vector<VisorMatrizImg::Pixel>> matriz(height, vector<VisorMatrizImg::Pixel>(width));
+
         for (int i = 0; i < height; ++i)
         {
             for (int j = 0; j < width; ++j)
             {
-                file.read(reinterpret_cast<char *>(&matriz[i][j].red), sizeof(unsigned char));
-                file.read(reinterpret_cast<char *>(&matriz[i][j].green), sizeof(unsigned char));
-                file.read(reinterpret_cast<char *>(&matriz[i][j].blue), sizeof(unsigned char));
+                file.read(reinterpret_cast<char *>(&matriz[i][j]), sizeof(VisorMatrizImg::Pixel));
             }
-            file.ignore(1);
+            file.seekg(1, ios::cur); // Skip separator
         }
 
-        VisorMatrizImg matrix2Image(matriz);
+        file.close();
 
-        matrix2Image.show(filename);
+        VisorMatrizImg visor(matriz);
+        visor.show("CVCS File");
     }
 };

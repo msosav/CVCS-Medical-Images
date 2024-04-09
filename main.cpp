@@ -1,6 +1,6 @@
 #include "CVCSFileWriter.cpp"
-
 #include "CVCSFileReader.cpp"
+#include "./Visor/VisorMatriz.h"
 
 int main()
 {
